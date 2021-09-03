@@ -21,7 +21,7 @@ class _RestScreenState extends State<RestScreen> {
 
     Future.microtask(() async {
       final resp = await restClient.getTopNews();
-      print("뉴스 리스트 : $resp");
+      // print("뉴스 리스트 : $resp");
     });
   }
 
@@ -43,41 +43,48 @@ class _RestScreenState extends State<RestScreen> {
       appBar: AppBar(
         title: Text("Retrofit"),
       ),
-      body: FutureBuilder(
-        future: restClient.getTopNews(),
-        initialData: [],
-        builder: (context, AsyncSnapshot snapshot) {
-          print("테스트 FutureBuilder 진입 : ${snapshot.connectionState}");
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            final ids = snapshot.data;
-            print("테스트 ids : $ids");
-            return ListView.builder(
-                itemCount: ids.length,
-                itemBuilder: (_, index) {
-                  return FutureBuilder(
-                    future: restClient.getNewDetail(ids[index]),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      print(
-                          "테스트 FutureBuilder 진입 222 : ${snapshot.connectionState}");
-                      print(
-                          "테스트 : id : ${ids[index]}, url : ${restClient.getNewDetail(ids[index])}");
-                      if (snapshot.data != null) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        print("테스트 news : ${snapshot.data}");
-                        return renderNewsCard(news: snapshot.data);
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  );
-                });
-          }
-        },
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: FutureBuilder(
+          future: restClient.getTopNews(),
+          initialData: [],
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              final ids = snapshot.data;
+              return ListView.builder(
+                  itemCount: ids.length,
+                  itemBuilder: (_, index) {
+                    return GestureDetector(
+                      onTap: (){
+                        print("아이템 클릭 : $index");
+                      },
+                      child: FutureBuilder(
+                        future: restClient.getNewDetail(ids[index]),
+                        builder: (context, AsyncSnapshot snapshot) {
+                          // print(
+                          //     "테스트 FutureBuilder 진입 222 : ${snapshot.connectionState}");
+                          // print(
+                          //     "테스트 : id : ${ids[index]}, url : ${restClient.getNewDetail(ids[index])}");
+                          if (snapshot.data != null) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            // print("테스트 news : ${snapshot.data}");
+                            return renderNewsCard(news: snapshot.data);
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    );
+                  });
+            }
+          },
+        ),
       ),
     );
   }
