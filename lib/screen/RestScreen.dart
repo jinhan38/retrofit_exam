@@ -19,10 +19,10 @@ class _RestScreenState extends State<RestScreen> {
     Dio dio = Dio();
     restClient = RestClient(dio);
 
-    Future.microtask(() async {
-      final resp = await restClient.getTopNews();
-      // print("뉴스 리스트 : $resp");
-    });
+    // Future.microtask(() async {
+    //   final resp = await restClient.getTopNews();
+    //   // print("뉴스 리스트 : $resp");
+    // });
   }
 
   renderNewsCard({required News news}) {
@@ -64,16 +64,11 @@ class _RestScreenState extends State<RestScreen> {
                       child: FutureBuilder(
                         future: restClient.getNewDetail(ids[index]),
                         builder: (context, AsyncSnapshot snapshot) {
-                          // print(
-                          //     "테스트 FutureBuilder 진입 222 : ${snapshot.connectionState}");
-                          // print(
-                          //     "테스트 : id : ${ids[index]}, url : ${restClient.getNewDetail(ids[index])}");
                           if (snapshot.data != null) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
                             }
-                            // print("테스트 news : ${snapshot.data}");
                             return renderNewsCard(news: snapshot.data);
                           } else {
                             return Center(child: CircularProgressIndicator());
